@@ -170,3 +170,5 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 Data/
+ansver1.csv
+submit1.csv
