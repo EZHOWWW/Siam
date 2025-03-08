@@ -102,7 +102,7 @@ class OilDataset(Dataset):
             return None
 
     def transform(self, s, d):
-        return self._series_trainsform(s), self._data_transform(d)
+        return (s, self._series_trainsform(s)), self._data_transform(d)
 
     def __len__(self) -> int:
         return len(self.data.index)
@@ -112,5 +112,15 @@ class OilDataset(Dataset):
         return self.transform(self._get_series_from_loc(loc), loc)
 
 
+BATCH_SIZE = 512
 oil_dataset = OilDataset()
-oil_dataloader = DataLoader(oil_dataset, batch_size=256, shuffle=True)
+oil_dataset_train, oil_dataset_test = torch.utils.data.random_split(
+    oil_dataset, [0.9, 0.1]
+)
+oil_train_dataloader = DataLoader(oil_dataset_train, batch_size=BATCH_SIZE)
+oil_test_dataloader = DataLoader(oil_dataset_test, batch_size=BATCH_SIZE)
+oil_dataloader = DataLoader(oil_dataset, batch_size=BATCH_SIZE)
+
+oil_head_dataset = OilDataset()
+oil_head_dataset.data = oil_head_dataset.data.head(512)
+oil_train_head_dataloader = DataLoader(oil_head_dataset, batch_size=BATCH_SIZE)
