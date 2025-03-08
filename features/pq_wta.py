@@ -13,6 +13,8 @@ from oildataset import (
     OilDataset,
     oil_dataset,
     oil_dataloader,
+    oil_train_dataloader,
+    oil_test_dataloader,
 )
 
 
@@ -33,15 +35,14 @@ class PQ_WTA(BaseFeature):
         return np.array(features, dtype=np.float64)
 
     def prepire(self, X):
-        X = [self.extract(x) for x in X]
-        return X
+        return [self.extract(x) for x in X]
 
     def train(self, X, y_bin, y_val=None) -> None:
         self.model.fit(self.prepire(X), np.array(y_bin))
 
     def train_epoch(self, loader, lr: float = 0.03, device: str = "cuda") -> None:
         print("start")
-        for X, (y_bin, _) in loader:
+        for (_, X), (y_bin, _) in loader:
             y_bin = y_bin[:, 0]
             self.train(X, y_bin)
 
@@ -57,7 +58,7 @@ class PQ_WTA(BaseFeature):
 
     def loss_data(self, dataloader):
         Y_true, Y_pred = [], []
-        for X, (y_true, _) in dataloader:
+        for (_, X), (y_true, _) in dataloader:
             y_true = y_true[:, 0]
             Y_true += [*y_true]
             Y_pred += [torch.tensor(*self.predict_bin(X))]
@@ -65,11 +66,7 @@ class PQ_WTA(BaseFeature):
 
 
 pqwta = PQ_WTA()
-train, test = torch.utils.data.random_split(oil_dataset, [0.7, 0.3])
-train = torch.utils.data.DataLoader(train)
-test = torch.utils.data.DataLoader(test)
-pqwta.train_epoch(train)
-
-# a = pqwta.predict_bin([test[0][0]])
-# print(a, test[0])
-print(pqwta.loss_data(test))
+(a, b), (c, d) = oil_dataset[0]
+print(b, c)
+pqwta.train_epoch(oil_train_dataloader)
+print(pqwta.loss_data(oil_test_dataloader))

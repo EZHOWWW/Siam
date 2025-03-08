@@ -102,7 +102,7 @@ class OilDataset(Dataset):
             return None
 
     def transform(self, s, d):
-        return (s, self._series_trainsform(s)), self._data_transform(d)
+        return ([], self._series_trainsform(s)), self._data_transform(d)
 
     def __len__(self) -> int:
         return len(self.data.index)
