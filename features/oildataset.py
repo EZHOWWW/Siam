@@ -43,7 +43,7 @@ class OilDataset(Dataset):
     def _series_trainsform(self, s):
         # Интерполяция с сохранением временной оси
         if len(s.index) < 2:
-            return None
+            return torch.zeros(3, self._series_size)
         time_original = s["Time"].values
         time_new = np.linspace(
             time_original.min(), time_original.max(), self._series_size
@@ -76,8 +76,8 @@ class OilDataset(Dataset):
         details = loc[self.value_features].copy()
 
         # Замена NaN и масштабирование с сохранением порядка признаков
-        # details_filled = details.fillna(-1).values
-        details_filled = details.values
+        details_filled = details.fillna(-1).values
+        # details_filled = details.values
         details_scaled = RobustScaler().fit_transform(
             details_filled.reshape(-1, 1)
         )  # [7]
@@ -95,7 +95,7 @@ class OilDataset(Dataset):
                 dtype={"Time": "float32", "DeltaP": "float32", "P_prime": "float32"},
                 engine="c",
             )
-            return df
+            return df._evaluate()
         except FileNotFoundError as x:
             print(file_path)
             print(f"File not found in path:\t {file_path}\n" + x)
@@ -113,5 +113,4 @@ class OilDataset(Dataset):
 
 
 oil_dataset = OilDataset()
-oil_dataloader = DataLoader(oil_dataset, batch_size=1024)
-
+oil_dataloader = DataLoader(oil_dataset, batch_size=256, shuffle=True)

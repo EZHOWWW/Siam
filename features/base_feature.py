@@ -1,6 +1,17 @@
 from abc import ABC, abstractmethod
+import torch
+import torch.nn as nn
+from torch.utils.data import Dataset, DataLoader
 from numpy import nan
-from oildataset import *
+
+from oildataset import (
+    Series,
+    BinFeatures,
+    ValueFeatures,
+    OilDataset,
+    oil_dataloader,
+    oil_dataset,
+)
 
 
 class BaseFeature(ABC):
@@ -20,7 +31,7 @@ class BaseFeature(ABC):
     ...
 
     @abstractmethod
-    def train(X: Series, y_bin: BinFeatures, y_val: ValueFeatures) -> None:
+    def train(self, X: Series, y_bin: BinFeatures, y_val: ValueFeatures) -> None:
         """
         Обучить модель.
 
