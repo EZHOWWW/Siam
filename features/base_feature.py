@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from numpy import nan
+from oildataset import *
 
 
 class BaseFeature(ABC):
@@ -7,7 +8,7 @@ class BaseFeature(ABC):
         self.nun_value = nun_value
 
     @abstractmethod
-    def predict(self, series) -> tuple[float, float]:
+    def predict(self, series: Series) -> tuple[BinFeatures, ValueFeatures]:
         """
         Сделать предикт. Получаеть серию и выдает tuple(bin_feature, details)
 
@@ -15,20 +16,30 @@ class BaseFeature(ABC):
                 Бинарный признак, есть фича или нет,
                 Числовой признак, если фичи нет то self.nun_value)
         """
+
     ...
-    
+
     @abstractmethod
-    def train(X, y_bin, y_val) -> None:
+    def train(X: Series, y_bin: BinFeatures, y_val: ValueFeatures) -> None:
         """
-        Обучить модель. 
+        Обучить модель.
 
         X: Контейнер из серий.
         y_bin: Контейнер такого же размера из бинарных признаков
         y_val: Конейнер такого же размера из числовых признаков
         """
+
+    ...
+
     @abstractmethod
-    def loss(Y_true, Y_pred) -> tuple[float, float]
+    def train_epoch(
+        self, loader: DataLoader, lr: float = 0.03, device: str = "cuda"
+    ) -> None: ...
+
+    @abstractmethod
+    def loss(Y_true, Y_pred) -> tuple[float, float]:
         """
-        Получить значение ошибки, ошибка для бинарного признака, ошибка для числового 
+        Получить значение ошибки, ошибка для бинарного признака, ошибка для числового
         """
-    
+
+    ...
