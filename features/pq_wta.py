@@ -16,6 +16,7 @@ from oildataset import (
     oil_train_dataloader,
     oil_test_dataloader,
 )
+import pickle
 
 
 class PQ_WTA(BaseFeature):
@@ -69,4 +70,5 @@ pqwta = PQ_WTA()
 (a, b), (c, d) = oil_dataset[0]
 print(b, c)
 pqwta.train_epoch(oil_train_dataloader)
+pickle.dump(pqwta.model, open("pq_wtabodel.sav", "wb"))
 print(pqwta.loss_data(oil_test_dataloader))
